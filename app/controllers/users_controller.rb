@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
-before_action :authenticate_user, only: [ :show ]
-before_action :set_user, only: [ :show ]
+before_action :authenticate_user, only: [ :show, :update, :delete ]
+before_action :set_user, only: [ :show, :update, :delete ]
 
  def index
  	@users = User.all
@@ -12,7 +12,7 @@ before_action :set_user, only: [ :show ]
  end
 
  def create
-	 @user = User.create(create_param)
+	 @user = User.create(user_param)
 	 if @user.save
 	 	render json: { result: true, users: @user }, status: :created
 	 else
@@ -21,8 +21,24 @@ before_action :set_user, only: [ :show ]
 
  end 
 
+ def update
+ 	if @user.update(user_param)
+ 		render json: { result: true, msg: "Update Success "}
+ 	else 
+ 		render json: { result: false, msg: "Update Failed "}
+ 	end
+ end
+
+def delete
+	if @user.destroy
+		render json: { result: true, msg: "Delete Success" }
+	else
+		render json: { result: false, msg: "Delete Failed" }
+	end
+end
+
  private
- def create_param
+ def user_param
  	params.require(:user).permit(:username,:email,:password,:password_confirmation)
  end
 
